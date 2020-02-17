@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# -*- coding: utf-8 -*-
 # ex: set fdm=marker
 # usage {{{1 
 #/
@@ -11,6 +12,11 @@ SKELETON_DIR="$(dirname "$DIR")"
 TEMPLATE_DIR="$SKELETON_DIR/templates"
 SKELETON="$TEMPLATE_DIR/bash_skeleton.sh"
 RUNNING_DIR="$(pwd)"
+if [ -f "$running_dir/.env" ]; then
+  source "$RUNNING_DIR/.env"
+elif [ -f "$RUNNING_DIR/env" ]; then
+  source "$RUNNING_DIR/env"
+fi
 # 1}}} 
 # functions {{{1 
 banner() { # {{{2
@@ -34,6 +40,9 @@ die() { # {{{2
 warn() { # {{{2 
   echo -e "\\e[33mWARNING:\\e[39m $1"
 } # 2}}} 
+info() { # {{{3
+  echo -e "\\e[35mINFO:\\e[39m $1"
+} # 2}}}
 show_help() { # {{{2 
   grep '^#/' "${BASH_SOURCE[0]}" | cut -c4- || \
   die "Failed to display usage information"
