@@ -8,7 +8,7 @@
 # 1}}} 
 # environment {{{1 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-SKELETON_DIR="$(dirname "$DIR")"
+SKELETON_DIR="$(dirname "$(dirname "$DIR")")"
 TEMPLATE_DIR="$SKELETON_DIR/templates"
 SKELETON="$TEMPLATE_DIR/python_argparse.py"
 RUNNING_DIR="$(pwd)"
