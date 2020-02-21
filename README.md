@@ -10,13 +10,15 @@ include both R and Python skeletons.
 
 Simply run the `./install` script located in the directory.
 You can feel free to modify the script as desired (e.g., 
-redirect 
+redirect installation path, etc.
 
 # Specific Skeletons
 
 ## Bash Skeleton
-  \___________________________________________________________
-  |  PROJECT=\<project name\> \                               |
-  |  PROJECT_DESCRIPTION="something very long and boring" \ |
-  |  make_bash_script \<name\_of\_\script>                      |
-  \-----------------------------------------------------------
+The bash_skeleton.sh in the `templates`
+```PROJECT=\<project name\> \
+PROJECT_DESCRIPTION="something very long and boring" \ 
+make_bash_script <name_of_\script>
+```
+
+## Python Skeleton
