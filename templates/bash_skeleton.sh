@@ -9,11 +9,6 @@
 # environment {{{1 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 RUNNING_DIR="$(pwd)"
-if [ "$RUNNING_DIR" == "$DIR" ]; then
-  warn "Running in source directory:\\e[36m$DIR\\e[39m"
-else
-  echo -e "Running in Directory:\n\t\\e[35m$RUNNING_DIR\\e[39m"
-fi
 PROJECT=${PROJECT:-"Some Project Name in $DIR"}
 PROJECT_DESCRIPTION=${PROJECT_DESCRIPTION:-"lengthy text about your project"}
 # 1}}} 
@@ -25,8 +20,9 @@ banner() { # {{{2
     BANNER=$(figlet "$PROJECT")
   elif [ -x "$("command -v cowsay")" ]; then
     BANNER=$(cowsay "$PROJECT")
+  else
+    BANNER="\\e[34$PROJECT\\e[39m"
   fi
-  BANNER="\\e[34$PROJECT\\e[39m"
   BANNER="$BANNER\n\\e[33m $PROJECT_DESCRIPTION\\e[39m"
   echo -e "$BANNER"
 } # 2}}} 
@@ -37,6 +33,9 @@ die() { # {{{2
 warn() { # {{{2 
   echo -e "\\e[33mWARNING:\\e[39m $1"
 } # 2}}} 
+info() { # {{{2
+  echo -e "\\e[36mINFO: \\e[39m $1"
+} # 2}}}
 show_help() { # {{{2 
   grep '^#/' "${BASH_SOURCE[0]}" | cut -c4- || \
     die "Failed to display usage information"
@@ -61,4 +60,9 @@ done
 # 1}}} 
 # logic {{{1 
 banner
+if [ "$RUNNING_DIR" == "$DIR" ]; then
+  info "Running in source directory:\\e[36m$DIR\\e[39m"
+else
+  info -e "Running in directory:\n\t\\e[35m$RUNNING_DIR\\e[39m"
+fi
 # 1}}} 
