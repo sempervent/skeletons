@@ -1,56 +1,21 @@
 #!/usr/bin/env bash
+# -*- coding: utf8 -*-
 # ex: set fdm=marker
-# usage {{{1 
-#/ Usage: 
-#/    -h|-?|--help)
-#/       show this help and exit
-#/
-# 1}}} 
-# environment {{{1 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-PROJECT=${PROJECT:-"Some Project Name in $DIR"}
-# 1}}} 
-# functions {{{1 
-banner() { # {{{2
-  # make a static banner with embeded color codes
-  # BANNER=$(cat <<EOF\n  EOF;
-  # for a simple banner use
-  # BANNER="The \n$PROJECT\n\t script"
-  # or have a little funn
-  # BANNER=$(figlet "$PROJECT" | cowsay)
-  # or do some coloring
-  BANNER="\\e[32$PROJECT\\e[39m"
-  echo -e "$BANNER"
-} # 2}}} 
-die() { # {{{2 
-  echo -e "\\e[31mFAILURE:\\e[39m $1"
-  exit 1
-} # 2}}} 
-warn() { # {{{2 
-  echo -e "\\e[33mWARNING:\\e[39m $1"
-} # 2}}} 
-show_help() { # {{{2 
-  grep '^#/' "${BASH_SOURCE[0]}" | cut -c4- || \
-    die "Failed to display usage information"
-} # 2}}} 
-# 1}}} 
-# arguments {{{1 
-while :; do
-  case $1 in # check arguments {{{2 
-    -h|-\?|--help) # help {{{3 
-      banner
-      show_help
-      exit
-      ;; # 3}}} 
-    -?*) # unknown argument {{{3 
-      warn "Unknown option (ignored): $1"
-      shift
-      ;; # 3}}} 
-    *) # default {{{3 
-      break # 3}}} 
-  esac # 2}}} 
-done
-# 1}}} 
-# logic {{{1 
-banner
-# 1}}} 
+echo -e "\\e[33m :: INSTALLING MAKE SKELETON SCRIPTS :: \\e[39m"
+echo -e "\\e[32m   you may be asked for your root password \\e[39m"
+echo -e "\\e[34m :: SYMLINKING \\e[34mbin/*\\e[39m SCRIPTS TO \\e[34m/usr/local/bin\\e[39m :: \\e[39m"
+if [ -f "/usr/local/bin" ]; then
+  echo -e "\\e[36m file is already linked \\e[39m"
+  echo -e "\\e[32m overwriting \\e[39m"
+  if [ -w "/usr/local/bin" ]; then
+    rm /usr/local/bin/ms
+  else
+    sudo rm /usr/local/bin/ms
+  fi
+fi
+echo -e "\\e[33msymlinking\\e[39m"
+if [ -w "/usr/local/bin" ]; then
+  ln -s bin/ms /usr/local/bin/ms
+else
+  sudo ln -s bin/ms /usr/local/bin/ms
+fi
