@@ -1,0 +1,138 @@
+#!/usr/bin/env bash
+# ex: set fdm=marker
+# usage {{{1 
+#/ Usage: 
+#/    -h|-?|--help)
+#/       show this help and exit
+#/
+# 1}}} 
+# environment {{{1 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+RUNNING_DIR="$(pwd)"
+PROJECT=${PROJECT:-"Some Project Name in $DIR"}
+PROJECT_DESCRIPTION=${PROJECT_DESCRIPTION:-"lengthy text about your project"}
+# 1}}} 
+# files {{{1 
+HEADER="#!/usr/bin/env python\n# -*- coding: utf8 -*-\n\n"
+# __init__.py {{{2
+INIT=$(cat <<EOF 
+$HEADER
+""" setup initialization including package-wide logging """
+import sys
+import logging
+
+FORMAT = "[%(asctime)s - %(levelname)4s - %(filename)8s:%(funcName)s"
+FORMAT += ':%(lineno)s] %(message)s'
+
+LOG_FILE = f'/tmp/{__name__}.log'
+
+logging.basicConfig(
+    level=logging.INFO,
+    format=FORMAT,
+    datefmt="%Y/%m/%d %H:%M:%S",
+    handlers=[
+        logging.FileHandler(LOG_FILE),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
+EOF
+) # 2}}}
+# utils.py {{{2
+UTILS=$(cat <<EOF
+$HEADER
+""" contains package-wide functions """
+import logging
+from $1.exceptions import *
+EOF
+) # 2}}}
+# exceptions.py {{{2
+EXCEPTIONS=$(cat <<EOF
+$HEADER
+""" contains package specific exceptions """
+import logging
+from $1.errors import *
+
+
+class BaseException(Exception):
+    """ base class for all $1 exceptions """
+    def __init__(self, msg, err=Error.UNKNWON):
+        super().__init__(err[1] + ': ' + msg, err[0]) 
+
+    def text(self):
+        """ return: the exception text from err """
+        return self.args[0]
+
+    def type(self):
+        """ return: the type of exception
+        return self.args[1]
+EOF
+) # 2}}}
+# errors.py {{{2
+ERRORS=$(cat <<EOF
+$HEADER
+""" contains $1 specific errors """
+import logging
+from $1.errors import *
+
+Errors:
+    UNKNOWN = [0, 'an unknown error occurred']
+EOF
+) # 2}}}
+# static.py {{{2
+STATIC=$(cat <<EOF
+$HEADER
+""" contains $1 static objects """
+
+@dataclass
+ProjectInfo:
+    NAME: str = "$1"
+    DESCRIPTION: str = "$1 does stuff"
+    VERSION: str = "0.0.1"
+EOF
+) # 2}}}
+# 1}}} 
+# functions {{{1 
+banner() { # {{{2
+  if [ -x "$("command -v figlet")" ] && [ -x "$("command -v cowsay")" ]; then
+    BANNER=$(figlet "$PROJECT" | cowsay)
+  elif [ -x "$("command -v figlet")" ]; then
+    BANNER=$(figlet "$PROJECT")
+  elif [ -x "$("command -v cowsay")" ]; then
+    BANNER=$(cowsay "$PROJECT")
+  else
+    BANNER="\\e[34$PROJECT\\e[39m"
+  fi
+  BANNER="$BANNER\n\\e[33m $PROJECT_DESCRIPTION\\e[39m"
+  echo -e "$BANNER"
+} # 2}}} 
+die() { # {{{2 
+  echo -e "\\e[31mFAILURE:\\e[39m $1"
+  exit 1
+} # 2}}} 
+warn() { # {{{2 
+  echo -e "\\e[33mWARNING:\\e[39m $1"
+} # 2}}} 
+info() { # {{{2
+  echo -e "\\e[36mINFO: \\e[39m $1"
+} # 2}}}
+show_help() { # {{{2 
+  grep '^#/' "${BASH_SOURCE[0]}" | cut -c4- || \
+    die "Failed to display usage information"
+} # 2}}} 
+# 1}}} 
+# logic {{{1 
+banner
+if [ "$RUNNING_DIR" == "$DIR" ]; then
+  info "Running in source directory:\\e[36m$DIR\\e[39m"
+else
+  info -e "Running in directory:\n\t\\e[35m$RUNNING_DIR\\e[39m"
+fi
+mkdir "$1"
+echo "$INIT" > "$1/__init__.py"
+echo "$UTILS" > "$1/utils.py"
+echo "$EXCEPTIONS" > "$1/exceptions.py"
+echo "$ERRORS" > "$1/errors.py"
+echo "$STATIC" > "$1/static.py"
+printf "# %s\nSome python project that does pythony things" "$1" > \
+  "$1/README.md"
+# 1}}} 
