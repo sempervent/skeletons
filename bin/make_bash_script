@@ -6,7 +6,9 @@
 #/
 # 1}}} 
 # environment {{{1 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+#DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+DIR=$(readlink -f "$0")
+echo "$DIR"
 SKELETON_DIR="$(dirname "$DIR")"
 TEMPLATE_DIR="$SKELETON_DIR/templates"
 SKELETON="$TEMPLATE_DIR/bash_skeleton.sh"
