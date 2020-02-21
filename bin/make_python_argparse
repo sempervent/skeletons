@@ -7,14 +7,12 @@
 #/
 # 1}}} 
 # environment {{{1 
-#DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-DIR=$(readlink -f "$0")
-echo "$DIR"
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 SKELETON_DIR="$(dirname "$DIR")"
 TEMPLATE_DIR="$SKELETON_DIR/templates"
-SKELETON="$TEMPLATE_DIR/bash_skeleton.sh"
+SKELETON="$TEMPLATE_DIR/python_argparse.py"
 RUNNING_DIR="$(pwd)"
-if [ -f "$running_dir/.env" ]; then
+if [ -f "$RUNNING_DIR/.env" ]; then
   source "$RUNNING_DIR/.env"
 elif [ -f "$RUNNING_DIR/env" ]; then
   source "$RUNNING_DIR/env"
@@ -42,9 +40,6 @@ die() { # {{{2
 warn() { # {{{2 
   echo -e "\\e[33mWARNING:\\e[39m $1"
 } # 2}}} 
-info() { # {{{3
-  echo -e "\\e[35mINFO:\\e[39m $1"
-} # 2}}}
 show_help() { # {{{2 
   grep '^#/' "${BASH_SOURCE[0]}" | cut -c4- || \
   die "Failed to display usage information"
