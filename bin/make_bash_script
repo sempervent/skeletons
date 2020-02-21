@@ -10,11 +10,13 @@
 #DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 DIR=$(readlink -f "$0")
 echo "$DIR"
-SKELETON_DIR="$(dirname "$DIR")"
+SKELETON_DIR="$(dirname "$(dirname "$DIR")")"
 TEMPLATE_DIR="$SKELETON_DIR/templates"
 SKELETON="$TEMPLATE_DIR/bash_skeleton.sh"
 RUNNING_DIR="$(pwd)"
-if [ -f "$running_dir/.env" ]; then
+PROJECT="MSb"
+PROJECT_DESCRIPTION="Create bash Create a bash script templates"
+if [ -f "$RUNNING_DIR/.env" ]; then
   source "$RUNNING_DIR/.env"
 elif [ -f "$RUNNING_DIR/env" ]; then
   source "$RUNNING_DIR/env"
@@ -28,8 +30,9 @@ banner() { # {{{2
     BANNER=$(figlet "$PROJECT")
   elif [ -x "$(command -v cowsay)" ]; then
     BANNER=$(cowsay "$PROJECT")
+  else
+    BANNER="\\e[34$PROJECT\\e[39m"
   fi
-  BANNER="\\e[34$PROJECT\\e[39m"
   BANNER="$BANNER\n\\e[33m $PROJECT_DESCRIPTION\\e[39m"
   BANNER="$BANNER\n\t\\e[34m$SKELETON_DIR\\e[39m"
   BANNER="$BANNER\n\t\\e[35m$TEMPLATE_DIR\\e[39m"
