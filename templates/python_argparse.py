@@ -36,13 +36,18 @@ def create_parser():
 
 
 def main():
-    logging.debug('Creating parser')
+    """ create the main function """
+    if args.verbosity > 1:
+        logging.debug('Creating parser')
     parser = create_parser()
-    logging.debug('Created parser')
+    if args.verbosity > 1:
+        logging.debug('Created parser')
     args = parser.parse_args()
-    logging.debug('Retrieved arguments')
+    if args.verbosity > 1:
+        logging.debug('Retrieved arguments')
     if args.verbosity > 0:
         logging.info('Beginning main logic')
+
 
 
 if __name__ == "__main__":
