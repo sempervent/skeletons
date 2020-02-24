@@ -4,8 +4,10 @@
 #/ Usage: ms [OPTIONS] SCRIPT_TYPE SCRIPT_NAME
 #/
 #/  SCRIPT_TYPES:
-#/    bash - use bash skeleton
-#     python - use python argparse script
+#/    bash      - use bash skeleton
+#/    argparse  - use python argparse script
+#/    package   - crete a basic python package
+#/    flask     - 
 #/
 #/    
 #/  Optional Arguments:     
@@ -58,11 +60,14 @@ if [ "$#" -ne "0" ]; then
 fi
 case $1 in
   bash) SKELETON="$TEMPLATE_DIR/bash_skeleton.sh" ;;
-  python) SKELETON="$TEMPLATE_DIR/python_argparse.py" ;;
+  argparse) SKELETON="$TEMPLATE_DIR/python_argparse.py" ;;
   package) "$DIR/make_python_package"; exit ;;
+  flask) SKELETON="$TEMPLATE_DIR/python_flask.py" ;;
+  -h|--help) show_help; exit ;;
   -?*) die "unknown command $1" ;;
 esac
-
+OUTPUT_FILE=$2
+shift 2
 # 1}}} 
 # logic {{{1 
 banner
@@ -71,10 +76,10 @@ if [ "$RUNNING_DIR" == "$DIR" ]; then
 else
   info -e "Running in directory:\n\t\\e[35m$RUNNING_DIR\\e[39m"
 fi
-if [ -x "$("command -v cat")" ]; then
-  cat "$SKELETON" > "$2"
-elif [ -x "$("command -v cp")" ]; then
-  cp "$SKELETON" "$2"
+if [ -x "$("command cat")" ]; then
+  cat "$SKELETON" > "$OUTPUT_FILE"
+elif [ -x "$("command cp")" ]; then
+  cp "$SKELETON" "$OUTPUT_FILE"
 else
   die "No valid methods for creating skeleton"
 fi
