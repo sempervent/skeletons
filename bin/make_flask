@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# -*- coding: utf-8 -*-
+# ex: set fdm=marker
+# usage {{{1 
+#/
+#/ Usage:  make_bash_script <script_name>
+#/
+# 1}}} 
+# environment {{{1 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+SKELETON_DIR="$(dirname "$(dirname "$DIR")")"
+TEMPLATE_DIR="$SKELETON_DIR/templates"
+SKELETON="$TEMPLATE_DIR/python_flask.py"
+RUNNING_DIR="$(pwd)"
+if [ -f "$RUNNING_DIR/.env" ]; then
+  source "$RUNNING_DIR/.env"
+elif [ -f "$RUNNING_DIR/env" ]; then
+  source "$RUNNING_DIR/env"
+fi
+# 1}}} 
+# functions {{{1 
+banner() { # {{{2
+  if [ -x "$(command -v figlet)" ] && [ -x "$(command -v cowsay)" ]; then
+    BANNER=$(figlet "$PROJECT" | cowsay)
+  elif [ -x "$(command -v figlet)" ]; then
+    BANNER=$(figlet "$PROJECT")
+  elif [ -x "$(command -v cowsay)" ]; then
+    BANNER=$(cowsay "$PROJECT")
+  fi
+  BANNER="\\e[34$PROJECT\\e[39m"
+  BANNER="$BANNER\n\\e[33m $PROJECT_DESCRIPTION\\e[39m"
+  BANNER="$BANNER\n\t\\e[34m$SKELETON_DIR\\e[39m"
+  BANNER="$BANNER\n\t\\e[35m$TEMPLATE_DIR\\e[39m"
+  echo -e "$BANNER"
+} # 2}}} 
+die() { # {{{2 
+  echo -e "\\e[31mFAILURE:\\e[39m $1"
+  exit 1
+} # 2}}} 
+warn() { # {{{2 
+  echo -e "\\e[33mWARNING:\\e[39m $1"
+} # 2}}} 
+show_help() { # {{{2 
+  grep '^#/' "${BASH_SOURCE[0]}" | cut -c4- || \
+  die "Failed to display usage information"
+} # 2}}} 
+# 1}}} 
+# arguments {{{1 
+if [ -n "$1" ]; then
+  OUTPUT_FILE="$RUNNING_DIR/$1"
+else
+  die "No Output File Specified"
+fi
+# logic {{{1 
+banner
+if [ "$RUNNING_DIR" == "$DIR" ]; then
+  warn "Running in source directory:\\e[36m$DIR\\e[39m"
+else
+  echo -e "Running in Directory:\n\t\\e[35m$RUNNING_DIR\\e[39m"
+fi
+echo -e "Writing skeleton to \\e[34m$OUTPUT_FILE\\e[39m"
+cat "$SKELETON" >> "$OUTPUT_FILE"
+# 1}}} 
