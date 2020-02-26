@@ -9,8 +9,8 @@
 # environment {{{1 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 RUNNING_DIR="$(pwd)"
-PROJECT=${PROJECT:-"Some Project Name in $DIR"}
-PROJECT_DESCRIPTION=${PROJECT_DESCRIPTION:-"lengthy text about your project"}
+PROJECT=${PROJECT:-"Cretae a python package in $DIR"}
+PROJECT_DESCRIPTION=${PROJECT_DESCRIPTION:-"creates skeleton *.py in a dir"}
 # 1}}} 
 # files {{{1 
 HEADER="#!/usr/bin/env python\n# -*- coding: utf8 -*-\n\n"
