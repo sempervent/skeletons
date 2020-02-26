@@ -14,7 +14,23 @@ RUNNING_DIR="$(pwd)"
 PROJECT=${PROJECT:-"Initiate a git based project"}
 PROJECT_DESCRIPTION=${PROJECT_DESCRIPTION:-"populate useful \
   files and some hooks'"}
-# 1}}} 
+# 1}}}
+# data {{{1
+GITIGNORE="$(cat <<EOF
+.swo
+.swp
+.log
+__pycache__
+EOF
+)"
+README="$(cat <<EOF
+# $PROJECT
+
+## Description
+$PROJECT_DESCRIPTION
+EOF
+)"
+# 1}}}
 # functions {{{1 
 banner() { # {{{2
   if [ -x "$("command -v figlet")" ] && [ -x "$("command -v cowsay")" ]; then
@@ -46,16 +62,24 @@ show_help() { # {{{2
 # 1}}} 
 # logic {{{1 
 banner
+if [ "$#" -eq "0" ]; then
+  banner
+  info "no arguments passed"
+  exit 1
+fi
 if [ "$RUNNING_DIR" == "$DIR" ]; then
   info "Running in source directory:\\e[36m$DIR\\e[39m"
 else
-  info -e "Running in directory:\n\t\\e[35m$RUNNING_DIR\\e[39m"
+  info "Running in directory:\n\t\\e[35m$RUNNING_DIR\\e[39m"
 fi
 mkdir"$1"
 prj="$RUNNING_DIR/$1"
-cD "$prj"
-ECHO "$README" >> "$1/README.MD"
+shift  # keep track of the cursor position as it fineshes an argument
+echo "$README" >> "$1/README.MD"
+cd "$prj" || exit 1
 git init
 echo "$GITIGNORE" >> "$prj/.gitignore"
+# TODO parse arguments now, and initiate the hooks (after abstraction 
+#      to functions'
 
 # 1}}} 
