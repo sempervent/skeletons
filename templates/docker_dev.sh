@@ -75,6 +75,27 @@ show_help() { # {{{2 ----------------------------------------------------------
   grep '^#/' "${BASH_SOURCE[0]}" | cut -c4- || \
     die "Failed to display usage information"
 } # 2}}} ----------------------------------------------------------------------
+check_volume() { # {{{2 -------------------------------------------------------
+  VOLUMES=$(docker volume ls --format "{{.Name}}")
+  if echo "$VOLUMES" | grep -q "$1"; then
+    info "$1 found"
+  else
+    warn "creating $1"
+    docker volume create --name="$1"
+  fi
+} # 2}}} ----------------------------------------------------------------------
+check_volumes() {
+  info 'add the volumes you need to check here'
+}
+check_network() {
+  NETWORKS=$(docker network ls --format "{{.Name}}")
+  if echo "$NETWORKS" | grep -q "$1"; then
+    info "Network found"
+  else
+    warn "Creating network"
+    docker network create $1
+  fi
+}
 # 1}}} ------------------------------------------------------------------------
 # arguments {{{1 --------------------------------------------------------------
 while :; do
