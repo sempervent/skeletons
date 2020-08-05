@@ -1,0 +1,116 @@
+#!/usr/bin/env bash
+# ex: set fdm=marker
+# usage {{{1 
+#/ projec init files
+#/
+#/ Usage: 
+#/  git_init [OPTIONS] -d [project directory] -r [git repository] 
+#/           -b [Banner name] --description [Banner Description]
+#/
+#/    -d|--directory)
+#/      specify directory to clone into (optional)
+#/   
+#/    -r|--repository)
+#/      specify the repository to git clone (optional)
+#/
+#/    -b|--banner)
+#/      specify the banner to be used (optional) defaults to working dir
+#/
+#/    --description)
+#/      specify the project description (optional)
+#/ 
+#/    -h|-?|--help)
+#/       show this help and exit
+#/
+# 1}}} 
+# environment {{{1 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+RUNNING_DIR="$(pwd)"
+PROJECT=${PROJECT:-"Initiate a git based project"}
+PROJECT_DESCRIPTION=${PROJECT_DESCRIPTION:-"populate useful \
+  files and some hooks'"}
+  BANNER_TEST=$PROJECT
+# 1}}}
+# data {{{1
+GITIGNORE="$(cat <<EOF
+.swo
+.swp
+.log
+__pycache__
+EOF
+)"
+README="$(cat <<EOF
+# $PROJECT
+
+## Description
+$PROJECT_DESCRIPTION
+EOF
+)"
+# 1}}}
+# functions {{{1 
+banner() { # {{{2
+  if [ -x "$("command -v figlet")" ] && [ -x "$("command -v cowsay")" ]; then
+    BANNER=$(figlet "$PROJECT" | cowsay)
+  elif [ -x "$("command -v figlet")" ]; then
+    BANNER=$(figlet "$PROJECT")
+  elif [ -x "$("command -v cowsay")" ]; then
+    BANNER=$(cowsay "$PROJECT")
+  else
+    BANNER="\\e[34$PROJECT\\e[39m"
+  fi
+  BANNER="$BANNER\n\\e[33m $PROJECT_DESCRIPTION\\e[39m"
+  echo -e "$BANNER"
+} # 2}}} 
+die() { # {{{2 
+  echo -e "\\e[31mFAILURE:\\e[39m $1"
+  exit 1
+} # 2}}} 
+warn() { # {{{2 
+  echo -e "\\e[33mWARNING:\\e[39m $1"
+} # 2}}} 
+info() { # {{{2
+  echo -e "\\e[36mINFO: \\e[39m $1"
+} # 2}}}
+show_help() { # {{{2 
+  grep '^#/' "${BASH_SOURCE[0]}" | cut -c4- || \
+    die "Failed to display usage information"
+} # 2}}} 
+# 1}}} 
+# parse args {{{1
+while :; do
+  case $1 in # check commands {{{2
+    -b|--banner)
+      BANNER="$2"
+      shift 2;; # 3}}}
+    -h|-\?--help) # help {{{3
+      banner
+      show_help
+      exit;; # 3}}}
+  esac
+done
+# 1}}}
+# logic {{{1 
+banner
+if [ "$#" -eq "0" ]; then
+  banner
+  info "no arguments passed"
+  exit 1
+fi
+if [ "$RUNNING_DIR" == "$DIR" ]; then
+  info "Running in source directory:\\e[36m$DIR\\e[39m"
+else
+  info "Running in directory:\n\t\\e[35m$RUNNING_DIR\\e[39m"
+fi
+mkdir"$1"
+prj="$RUNNING_DIR/$1"
+shift  # keep track of the cursor position as it fineshes an argument
+echo "$README" >> "$1/README.MD"
+cd "$prj" || exit 1
+git init
+git flow init
+git lfs install
+echo "$GITIGNORE" >> "$prj/.gitignore"
+# TODO parse arguments now, and initiate the hooks (after abstraction 
+#      to functions'
+
+# 1}}} 

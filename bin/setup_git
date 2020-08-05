@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# -*- coding: utf-8 -*-
+
+# environment {{{1 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+RUNNING_DIR="$(pwd)"
+PROJECT=${PROJECT:-"Initiate a git based project"}
+PROJECT_DESCRIPTION=${PROJECT_DESCRIPTION:-"populate useful \
+  files and some hooks'"}
+# 1}}}
