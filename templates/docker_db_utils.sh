@@ -50,7 +50,7 @@ backup_db() {
     pg_dump -U "$DB_USER" -h /tmp -d "$DATABASE" \
       --format=custom -f "/tmp/$DB_BACKUP"
   echo "Copying backup file: $DB_BACKUP"
-  docker cp "${PROJECT_NAME}_${CONTAINER}_1" \
+  docker cp "${PROJECT_NAME}_${CONTAINER}_1:/tmp/$DB_BACKUP" \
     "/tmp/$DB_BACKUP" .
   docker exec -it "${PROJECT_NAME}_${CONTAINER}_1" \
     rm -rf "/tmp/$DB_BACKUP"
