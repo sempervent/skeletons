@@ -1,0 +1,13 @@
+#!/usr/bin/env python3
+"""Create a basic flask app."""
+{{ imports }}
+from flask import Flask
+
+app = Flask({{ app_name }})
+
+
+{{ routes }}
+
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port={{ port }}

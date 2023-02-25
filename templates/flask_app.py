@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-""" This code provides the logic for handling requests between the data
-    provided by co-sims and their federates and the visualization/user
-    experience. See the README for more info
-"""
+"""Create a basic flask app."""
 import logging
 import logging.config
 import requests

@@ -1,0 +1,2 @@
+"""Define collections classes."""
+
