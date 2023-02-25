@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""The ricing module allows for quick setup and sharing of user environment
-   settings by storing configuration files in a hidden user directory database.
-   The configuration can be saved or chosen via the command line.
-"""
+"""Create template-able projects quickly."""
 from os import access, X_OK
 from pathlib import Path
 from re import sub as resub
@@ -31,8 +28,6 @@ _package_data = {
         'templates/*.j2',
     ],
 }
-
-print(_package_data)
 
 _SETUP = {
     'name': _HERE.name,
