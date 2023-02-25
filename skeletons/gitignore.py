@@ -21,17 +21,18 @@ def _call_gitignore(lang: Union[str, list]) -> str:
     if isinstance(lang, list):
         for l in lang:
             try:
-                gitignore += f"# {lang} gitignore"
+                gitignore += f"# {l} gitignore\n"
                 gitignore += _call_gitignore(lang=l)
             except Exception as excp:
                 print(f'error processing: {l}, skipped.')
                 print(f'{str(excp)}')
+                gitignore += f"# {l} raised {excp}\n"
     response = requests.get(
         url=_url.format(lang=lang.capitalize()),
         timeout=60,
     )
     if response.status == 200:
-        return response.text
+        return response.text + "\n"
     return ""
 
 
