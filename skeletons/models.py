@@ -9,6 +9,7 @@ from pydantic import BaseModel, validator
 from jinja2 import Template
 
 from skeletons.settings import enc
+from skeletons.langs import LANG_DICT
 
 
 class CLXN(BaseModel):
@@ -40,6 +41,16 @@ class FileModel(BaseModel):
                 path = path.replace('~', getenv('HOME', '.'))
             path = Path(path)
         return path
+
+    def lang(self):
+        """Determine the "language" the file is written in."""
+        try:
+            if self.path.suffix == '.j2':
+
+            return LANG_DICT[self.path.suffix]
+        except KeyError:
+            return 'text'
+
 
     def contents(
             self, 
@@ -109,8 +120,10 @@ class ResourceModel(BaseModel):
 
 
 class TemplateModel(BaseModel):
+    """A template is used to render a resource into a file."""
     name: str
     dest: Union[str, FileModel]
+    render_args: Optional[dict] = None
     resource: Optional[Union[str, ResourceModel]] = None
 
     @validator('dest')
@@ -124,3 +137,16 @@ class TemplateModel(BaseModel):
             return FileModel(path=dest, **kwargs)
         return dest
 
+    @validator('render_args')
+    def _render_args_validator(cls, render_args: Optional[dict]) -> dict:
+        """Always return an empty dict or the render args."""
+        if isinstance(render_args, dict):
+            return render_args
+        return {}
+
+    def write_template(self, **kwargs):
+        """Write the template to the file."""
+        self.dest.contents(
+            do='write',
+            data=self.resource.parse(**kwargs),
+        )
