@@ -1,67 +1,17 @@
 """Docker based examples."""
-from typing import Optional, Callable, Union
-from string import Formatter
-from inspect import getfullargspec
 
-_LAYER_ORDER = ['from', 'from_as', 'env', 'arg', 'arg_default', 'workdir', 
-                'copy',  'apt', 'pip', 'pip_reqs', 'pipenv', 'run', 'expose', 
+from skeletons.strings import LString
+
+_LAYER_ORDER = ['from', 'from_as', 'env', 'arg', 'arg_default', 'workdir',
+                'copy',  'apt', 'pip', 'pip_reqs', 'pipenv', 'run', 'expose',
                 'entrypoint',
                 'cmd']
 
-
-class Layer:
-    """A class for defining a layer."""
-
-    def __init__(self, *args, fstr: Union[str, Callable], **kwargs):
-        self.fstr = fstr
-        self.string = None
-        self.fmt = None
-        if args:
-            self._assign_args_to_fmt(*args)
-        elif kwargs:
-            self.fmt = kwargs
-        if self.fmt and isinstance(self.fstr, str):
-            self.string = self.fstr.format(**self.fmt)
-        elif self.fmt and callable(self.fstr):
-            self.string = self.fstr(**self.fmt)
-
-    def _assign_args_to_fmt(self, *args):
-        if args and isinstance(self.fstr, str):
-            sf = Formatter()
-            sf.parse(self.fstr)
-            keys = [x[1] for x in list(sf.parse(self.fstr))]
-            self.fmt = dict(zip(keys, args))
-        if args and callable(self.fstr):
-            fargs = getfullargspec(self.fstr).args
-            self.fmt = dict(zip(fargs, args))
-
-    def __repr__(self):
-        if self.string:
-            return self.string
-        return self.fstr(**self.fmt)
-
-    def __str__(self):
-        if self.string:
-            return self.string
-        return self.fstr(**self.fmt)
-
-    def build(self, *args, **kwargs) -> Optional[str]:
-        if args:
-            self._assign_args_to_fmt(*args)
-        if kwargs:
-            self.fmt == kwargs
-        if isinstance(self.fmt, dict):
-            if isinstance(self.fstr, str):
-                return self.fstr.format(**self.fmt)
-            if callable(self.fstr):
-                return self.fstr(**self.fmt)
-        return None
-
-
+# pylint: disable=invalid-name
 _def_to = '.'
 _def_from = '.'
 _reqsfile = 'requirements.txt'
-
+# pylint: enable=invalid-name
 _LAYER_FSTRINGS = {
     'run': 'RUN {cmd}\n',
     'from': 'FROM {image}\n',
@@ -103,8 +53,8 @@ _LAYER_INSTRUCTIONS = {
         'pip_reqs': lambda reqsfile: f'''RUN pip update --no-cache-dir && \\
 \tpip install -r {reqsfile or _reqsfile}
 ''',
-    'pipenv': 'RUN pipenv install --system --deploy\n',
-        'run': lambda cmd: f'RUN {cmd}\n',
+    'pipenv': lambda _: 'RUN pipenv install --system --deploy\n',
+    'run': lambda cmd: f'RUN {cmd}\n',
     'expose': lambda port: f'EXPOSE {port}\n',
     'entrypoint': lambda entrypoint: f'ENTRYPOINT {entrypoint}\n',
     'cmd': lambda cmd: f'CMD {cmd}\n',
@@ -117,8 +67,8 @@ LAYER_INSTRUCTIONS = dict(
         )
 
 LAYERS = {}
-for layer, instruction in _LAYER_INSTRUCTIONS.items():
-    LAYERS[layer] = Layer(fstr=instruction)
+for layer, instruction in LAYER_INSTRUCTIONS.items():
+    LAYERS[layer] = LString(exp=instruction)
 
 
 class Dockerfile:
@@ -133,7 +83,9 @@ class Dockerfile:
                 set(kwargs.keys()).intersection(LAYERS.keys())
             if intersection:
                 for value in intersection:
-                    l = LAYERS[value].build(**{value: kwargs.pop(value)})
+                    dv = {value: kwargs.pop(value)}
+                    print(dv)
+                    l = LAYERS[value].render(**dv)
                     print(value)
                     print(l)
                     self.file += l
@@ -145,19 +97,19 @@ class Dockerfile:
                 set(kwargs.keys()).intersection(LAYERS.keys())
             if intersection:
                 for value in intersection:
-                    setattr(self, value, 
-                            LAYERS[value].build(**{value: kwargs.pop(value)}))
+                    setattr(self, value,
+                            LAYERS[value].render(**{value: kwargs.pop(value)}))
         file = ""
         for layer in LAYERS:
             if hasattr(self, layer):
-                file = getattr(self, layer).build()
+                file = getattr(self, layer).render()
         return file
 
     def add(self, *args, **kwargs):
         """Add an entry to the file object."""
         for arg, key, item in zip(args, kwargs.items()):
             if arg == key and isinstance(item, dict):
-                self.file += LAYERS[arg](**item)
+                self.file += LAYERS[arg].render(**item)
 
     def construct(self, *args, replace: bool = False, **kwargs) -> str:
         """Construct the header of the Dockerfile."""

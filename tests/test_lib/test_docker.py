@@ -1,7 +1,7 @@
 """Test docker file creation."""
 import pytest
 
-from skeletons.lib.docker import Layer, Dockerfile, LAYERS
+from skeletons.lib.docker import Dockerfile, LAYERS
 
 
 TEXLIVE_DEBIAN = """FROM debian:latest
@@ -14,7 +14,7 @@ WORDKIR /app
 ENV FLASK_APP=app.py
 ENV FLASK_ENV=development
 RUN pip update --no-cache-dir && \\\n
-\tpip install --no-cache-dir install flask
+\tpip install --no-cache-dir install flask sqlalchemy
 COPY . .
 EXPOSE 8000
 CMD ["flask", "run", "--config=config.py"]
@@ -45,29 +45,23 @@ CMD ["genisoimage", "-o", "file.iso", "-V", "my iso file",
 """
 
 
-def test_Layer():
-    """Test that a Layer object has the expected properties."""
-    this_layer = Layer(fstr='this is {this}')
-    assert 'this is good' == this_layer.build(this='good')
-    too_layer = Layer(fstr='this is {too}', too='good, too')
-    assert 'this is good, too' == str(too_layer)
-    assert 'this is good, too' == too_layer.build()
-    assert 'this is bad' == this_layer.build('bad')
-    assert 'this is awesome' == too_layer.build(too='awesome')
-
-
+# pylint: disable=invalid-name
 def test_Dockerfile():
+    """Test the Dockerfile class creates expected dockerfiles."""
+    # pylint: enable=invalid-name
     texlive_debian = Dockerfile(
         image='debian:latest',
-        apt='texlive-full poppler',
+        apt={'pkgs': 'texlive-full poppler'},
     )
     assert texlive_debian.file == TEXLIVE_DEBIAN
     flask_app = Dockerfile(
         image="python:3.11-slim",
         workdir='/app',
         copy=True,
-        pip='flask',
-
+        pip='flask sqlachemy',
+        expose="8000",
+        cmd='"flask", "run", "--config=config.py"',
     )
+    flask_app.add(env=('FLASK_APP', 'app.py'))
+    flask_app.add(env=('FLASK_ENV', 'development'))
     assert flask_app.build() == FLASK_APP
-
