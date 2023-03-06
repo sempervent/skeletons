@@ -22,18 +22,21 @@ def _call_gitignore(lang: Union[str, list]) -> str:
         for l in lang:
             try:
                 gitignore += f"# {l} gitignore\n"
-                gitignore += _call_gitignore(lang=l)
+                gitignore += _call_gitignore(lang=l.capitalize())
+                # pylint: disable=broad-except
             except Exception as excp:
+                # pylint: enable=broad-except
                 print(f'error processing: {l}, skipped.')
                 print(f'{str(excp)}')
                 gitignore += f"# {l} raised {excp}\n"
-    response = requests.get(
-        url=_url.format(lang=lang.capitalize()),
-        timeout=60,
-    )
-    if response.status == 200:
-        return response.text + "\n"
-    return ""
+    elif isinstance(lang, str):
+        response = requests.get(
+            url=_url.format(lang=lang.capitalize()),
+            timeout=60,
+        )
+        if response.status == 200:
+            return response.text + "\n"
+    return gitignore
 
 
 def write_gitignore(lang: Union[str, list]):
