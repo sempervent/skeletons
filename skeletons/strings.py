@@ -15,7 +15,7 @@ class FString:
         if kwargs and args:
             raise ValueError('both *args and **kwargs specified')
         if args:
-            self.fmt = self._assign_args_to_fmt(*args) 
+            self.fmt = self._assign_args_to_fmt(*args)
         elif kwargs:
             self.fmt = kwargs
         else:
@@ -36,6 +36,7 @@ class FString:
         return self.fstr.format(**self.fmt)
 
     def render(self, *args, **kwargs) -> str:
+        """Render the string itself."""
         if kwargs and args:
             raise ValueError('both *args and **kwargs specified')
         if args:
@@ -75,6 +76,7 @@ class LString:
         return self.exp(**self.fmt)
 
     def render(self, *args, **kwargs):
+        """Render the string."""
         if kwargs and args:
             raise ValueError('both *args and **kwargs specified')
         if args:
@@ -82,4 +84,3 @@ class LString:
         if kwargs:
             self.fmt = kwargs
         return self.exp(**self.fmt)
-
