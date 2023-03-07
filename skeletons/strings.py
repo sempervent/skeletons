@@ -6,6 +6,34 @@ from typing import Callable
 from inspect import getfullargspec
 
 
+def split_line(
+    txt: str, nchar: int = 79, flag: str = "&&", newline: str = "\n",
+    indent: str = "\t",
+):
+    """Split a line at over 79 characters, but only after following an &&, but
+    escape the newline character."""
+    parts = txt.split(flag)
+    output = []
+    current_line = ""
+    for part in parts:
+        words = part.strip().split()
+        if not words:
+            continue
+        if len(current_line) + len(words[0]) + 4 <= nchar:
+            current_line += " ".join([words[0], flag, '/'])
+            words = words[1:]
+        for word in words:
+            if len(current_line) + len(word) + 1 <= nchar:
+                current_line += word + " "
+            else:
+                output.append(" ".join([current_line[:-1], flag, '\\']))
+                current_line = f"{indent}{word} "
+        current_line = " ".join([indent, current_line[:-1], flag, '\\'])
+    if current_line:
+        output.append(current_line[:-4])
+    return newline.join(output)
+
+
 class FString:
     """A class for formatting an Fstr."""
 
