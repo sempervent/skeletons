@@ -6,8 +6,8 @@ from skeletons.settings import INDENT, NEWLINE, CURLY_OPEN, CURLY_CLOSE
 ENVAR = "{key}={value}"
 DIR_OF_SCRIPT = '"$( cd "$( dirname "${BASH_SOURCE[0]}" )"'
 DIR_OF_SCRIPT += ' >/dev/null 2>&1 && pwd )"'
-SRC_IF_FILE = 'if [ -f "${file}" ]; then\n'
-SRC_IF_FILE += '\tsource "${file}"\nfi'
+SRC_IF_FILE = 'if [ -f "${file}" ]; then{NEWLINE}'
+SRC_IF_FILE += '{INDENT}source "${file}"{NEWLINE}fi'
 BASH_COLORS = {
     'black': r'\033[0;30m',
     'red': r'\033[0;31m',
