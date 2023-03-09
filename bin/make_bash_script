@@ -14,8 +14,8 @@ SKELETON_DIR="$(dirname "$(dirname "$DIR")")"
 TEMPLATE_DIR="$SKELETON_DIR/templates"
 SKELETON="$TEMPLATE_DIR/bash_skeleton.sh"
 RUNNING_DIR="$(pwd)"
-PROJECT="MSb"
-PROJECT_DESCRIPTION="Create bash Create a bash script templates"
+PROJECT="bash skeleton"
+PROJECT_DESCRIPTION="Create a bash script template"
 if [ -f "$RUNNING_DIR/.env" ]; then
   source "$RUNNING_DIR/.env"
 elif [ -f "$RUNNING_DIR/env" ]; then
